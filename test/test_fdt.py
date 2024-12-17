@@ -34,6 +34,12 @@ class BaseFDTTests(unittest.TestCase):
         self.assertEqual(props['clock-frequency'][0], '0x384000')
         self.assertEqual(props['reg'], ['0x0', '0x10000000', '0x0', '0x100'])
         self.assertEqual(props['compatible'], 'ns16550a')
+        props = self.fdt.get_props_by_compat('ns16550a')
+        self.assertEqual(props['interrupts'][0], '0xa')
+        self.assertEqual(props['interrupt-parent'][0], '0x3')
+        self.assertEqual(props['clock-frequency'][0], '0x384000')
+        self.assertEqual(props['reg'], ['0x0', '0x10000000', '0x0', '0x100'])
+        self.assertEqual(props['compatible'], 'ns16550a')
 
         # get_node_offset_by_xxx
         self.assertEqual(self.fdt.get_node_offset_by_path('/soc'), 692)
@@ -58,8 +64,7 @@ class BaseFDTTests(unittest.TestCase):
 
         # get_phandle_by_xxx
         self.assertEqual(self.fdt.get_phandle_by_offset(1300), '0x4')
-        self.assertRaises(ValueError, self.fdt.get_phandle_by_offset, -1)
-        # self.fdt.get_phandle_by_offset == None
+        self.assertEqual(self.fdt.get_phandle_by_offset(-1), None)
 
 
 if __name__ == "__main__":

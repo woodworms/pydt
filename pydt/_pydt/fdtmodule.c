@@ -106,7 +106,7 @@ int _get_fdt_path_offset(const void *fdt, const char *path, int *fdt_errno)
  * Traverse all properties under a specified path based on the given
  * offset and return a Python dict containing the properties and their values.
  */
-static PyObject *_foreach_path_props_by_offset(const void *fdt, int offset)
+static PyObject *_foreach_node_props_by_offset(const void *fdt, int offset)
 {
     uint32_t ret;
     int props_offset, len;
@@ -211,7 +211,7 @@ static PyObject *get_props_by_path(FDTObject *self, PyObject *args)
         return NULL;
     }
 
-    return _foreach_path_props_by_offset(self->fdt, offset);
+    return _foreach_node_props_by_offset(self->fdt, offset);
 }
 
 static PyObject *get_node_offset_by_path(FDTObject *self, PyObject *args)
@@ -317,7 +317,7 @@ static PyObject *get_props_by_offset(FDTObject *self, PyObject *args)
 
     }
 
-    props = _foreach_path_props_by_offset(self->fdt, offset);
+    props = _foreach_node_props_by_offset(self->fdt, offset);
     if (props == NULL) {
         return Py_None;
     }
@@ -338,6 +338,25 @@ static PyObject *get_phandle_by_offset(FDTObject *self, PyObject *args)
     return phandle > 0 ? PyUnicode_FromFormat("0x%x", phandle) : Py_None;
 }
 
+static PyObject *get_props_by_compat(FDTObject *self, PyObject *args)
+{
+    int offset;
+    const char *compatible;
+
+    if (!PyArg_ParseTuple(args, "s", &compatible)) {
+        return NULL;
+    }
+
+    /* start the search from the root node. */
+    offset = fdt_node_offset_by_compatible(self->fdt, -1, compatible);
+    if (offset < 0) {
+        _set_py_except(offset, &(self->fdt_errno));
+        return NULL;
+    }
+
+    return _foreach_node_props_by_offset(self->fdt, offset);
+}
+
 static PyMethodDef fdt_obj_methods[] = {
     /**
      * get node property
@@ -345,16 +364,23 @@ static PyMethodDef fdt_obj_methods[] = {
     {"get_props_by_path", (PyCFunction)get_props_by_path, METH_VARARGS,
     PyDoc_STR(
     "get_props_by_path($self, path)\n--\n"
-    "Retrieves all properties of a node at a specified path in "
+    "Retrieves all properties of a node at a given path in "
     "the FDT and returns them as a dictionary.\n"
     "If the path does not exist, it raises a ValueError."
     )},
     {"get_props_by_offset", (PyCFunction)get_props_by_offset, METH_VARARGS,
     PyDoc_STR(
     "get_props_by_offset($self, offset)\n--\n"
-    "Retrieves all properties of a node at a specified offset in "
+    "Retrieves all properties of a node at a given offset in "
     "the FDT and returns them as a dictionary.\n"
     "If the offset is invalid, it raises a ValueError."
+    )},
+    {"get_props_by_compat", (PyCFunction)get_props_by_compat, METH_VARARGS,
+    PyDoc_STR(
+    "get_props_by_offset($self, offset)\n--\n"
+    "Retrieves all properties of a node at a given compatible in "
+    "the FDT and returns them as a dictionary.\n"
+    "If the compatible is not found, it raises a ValueError."
     )},
     /**
      * node offset
