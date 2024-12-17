@@ -357,6 +357,20 @@ static PyObject *get_props_by_compat(FDTObject *self, PyObject *args)
     return _foreach_node_props_by_offset(self->fdt, offset);
 }
 
+static PyObject *get_max_phandle(FDTObject *self, PyObject *args)
+{
+    int ret;
+    uint32_t phandle;
+
+    ret = fdt_find_max_phandle(self->fdt, &phandle);
+    if (ret < 0) {
+        _set_py_except(ret, &(self->fdt_errno));
+        return NULL;
+    }
+
+    return PyUnicode_FromFormat("0x%x", phandle);
+}
+
 static PyMethodDef fdt_obj_methods[] = {
     /**
      * get node property
@@ -435,6 +449,12 @@ static PyMethodDef fdt_obj_methods[] = {
     "get_phandle_by_offset($self, offset)\n--\n"
     "Retrieves the phandle value of the node at the given offset in the FDT.\n"
     "If the offset is invalid, it returns None."
+    )},
+    {"get_max_phandle", (PyCFunction)get_max_phandle, METH_NOARGS,
+    PyDoc_STR(
+    "get_max_phandle($self)\n--\n"
+    "Retrieves the maximum phandle from the FDT.\n"
+    "If the phandle is not found, it raises a ValueError."
     )},
     {NULL},
 };
