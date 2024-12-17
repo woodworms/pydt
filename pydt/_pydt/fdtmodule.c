@@ -526,6 +526,34 @@ static PyMethodDef fdt_methods[] = {
  */
 static int pydt_exec(PyObject *m)
 {
+#define ADD_ERR_MACRO(mod, name)                                  \
+    do {                                                      \
+        if (PyModule_AddIntConstant(mod, #name, -name) < 0) { \
+            return -1;                                        \
+        }                                                     \
+    } while(0)
+
+    ADD_ERR_MACRO(m, FDT_ERR_NOTFOUND);
+    ADD_ERR_MACRO(m, FDT_ERR_EXISTS);
+    ADD_ERR_MACRO(m, FDT_ERR_NOSPACE);
+    ADD_ERR_MACRO(m, FDT_ERR_BADOFFSET);
+    ADD_ERR_MACRO(m, FDT_ERR_BADPATH);
+    ADD_ERR_MACRO(m, FDT_ERR_BADPHANDLE);
+    ADD_ERR_MACRO(m, FDT_ERR_BADSTATE);
+    ADD_ERR_MACRO(m, FDT_ERR_TRUNCATED);
+    ADD_ERR_MACRO(m, FDT_ERR_BADMAGIC);
+    ADD_ERR_MACRO(m, FDT_ERR_BADVERSION);
+    ADD_ERR_MACRO(m, FDT_ERR_BADSTRUCTURE);
+    ADD_ERR_MACRO(m, FDT_ERR_BADLAYOUT);
+    ADD_ERR_MACRO(m, FDT_ERR_INTERNAL);
+    ADD_ERR_MACRO(m, FDT_ERR_BADNCELLS);
+    ADD_ERR_MACRO(m, FDT_ERR_BADVALUE);
+    ADD_ERR_MACRO(m, FDT_ERR_BADOVERLAY);
+    ADD_ERR_MACRO(m, FDT_ERR_NOPHANDLES);
+    ADD_ERR_MACRO(m, FDT_ERR_BADFLAGS);
+
+#undef ADD_ERR_MACRO
+
     if (PyModule_AddStringConstant(m, "__version__", MODULE_VERSION) < 0) {
         return -1;
     }

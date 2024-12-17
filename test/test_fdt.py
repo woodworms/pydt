@@ -5,6 +5,7 @@ import unittest
 class BaseFDTTests(unittest.TestCase):
     def setUp(self):
         self.fdt = pydt.FDT('test/dt/test.dtb')
+        self.fdt_consts = pydt.__dict__
 
     def test_fdt_attr(self):
         self.assertEqual(hex(self.fdt.magic), '0xd00dfeed')
@@ -20,6 +21,12 @@ class BaseFDTTests(unittest.TestCase):
         self.assertRaises(RuntimeError, pydt.FDT, '')
         self.assertRaises(RuntimeError, pydt.FDT, 'test/dt/noprefix.dt')
         self.assertRaises(OSError, pydt.FDT, 'test/dt/noexist.dtb')
+
+    def test_fdt_error_code(self):
+        consts = list(filter(lambda x: x.startswith("FDT_ERR_"), 
+                             self.fdt_consts.keys()))
+        for i in range(len(consts)):
+            self.assertEqual(self.fdt_consts[consts[i]], -(i + 1))
 
     def test_fdt_base_methods(self):
         # get_props_by_xxx
