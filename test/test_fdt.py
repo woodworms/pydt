@@ -73,7 +73,8 @@ class BaseFDTTests(unittest.TestCase):
         # get_phandle_by_xxx
         self.assertEqual(self.fdt.get_phandle_by_offset(1300), '0x4')
         self.assertEqual(self.fdt.get_phandle_by_offset(-1), None)
-
+        self.assertEqual(self.fdt.get_max_phandle(), '0x4')
+        # self.fdt.get_max_phandle() == None
 
 if __name__ == "__main__":
     unittest.main()
