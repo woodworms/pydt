@@ -10,6 +10,7 @@ class BaseFDTTests(unittest.TestCase):
         self.assertEqual(hex(self.fdt.magic), '0xd00dfeed')
         self.assertEqual(self.fdt.version, 17)
         self.assertEqual(self.fdt.errno, 19)
+        self.assertEqual(self.fdt.headersize, 40)
 
     def test_fdt_parse_failed(self):
         self.assertRaises(TypeError, pydt.FDT, 1)

@@ -473,6 +473,7 @@ static PyObject *fdt_obj_new(PyTypeObject *type, PyObject *args, PyObject *kwarg
     fdtobject->magic = fdt_magic(fdtobject->fdt);
     fdtobject->version = fdt_version(fdtobject->fdt);
     fdtobject->totalsize = fdt_totalsize(fdtobject->fdt);
+    fdtobject->headersize = fdt_header_size(fdtobject->fdt);
 
     return (PyObject *)fdtobject;
 }
@@ -490,6 +491,8 @@ static PyMemberDef fdt_obj_members[] = {
     PyDoc_STR("FDT totalsize")},
     {"errno", Py_T_INT, offsetof(FDTObject, fdt_errno), Py_READONLY,
     PyDoc_STR("FDT error code")},
+    {"headersize", Py_T_ULONGLONG, offsetof(FDTObject, headersize), Py_READONLY,
+    PyDoc_STR("FDT header size")},
     {NULL},
 };
 

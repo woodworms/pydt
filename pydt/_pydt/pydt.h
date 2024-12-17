@@ -24,13 +24,14 @@
 
 typedef struct {
     PyObject_HEAD
-    int fdt_errno;
 
     /* Raw FDT */
     uint32_t magic;
     uint32_t version;
     uint32_t totalsize;
+    size_t headersize;
     const void *fdt;
+    int fdt_errno;
 }FDTObject;
 
 
