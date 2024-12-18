@@ -391,6 +391,26 @@ static PyObject *get_node_name_by_compat(FDTObject *self, PyObject *args)
     return PyUnicode_FromString(name);
 }
 
+static PyObject *get_node_path_by_compat(FDTObject *self, PyObject *args)
+{
+    int offset;
+    const char *compatible;
+    const char *name = PyMem_Malloc(FDT_FULL_PATH_LEN);
+
+    if (!PyArg_ParseTuple(args, "s", &compatible)) {
+        return NULL;
+    }
+
+    offset = fdt_node_offset_by_compatible(self->fdt, -1, compatible);
+    if (offset < 0) {
+        _set_py_except(offset, &(self->fdt_errno));
+        return NULL;
+    }
+
+    fdt_get_path(self->fdt, offset, name, FDT_FULL_PATH_LEN);
+    return PyUnicode_FromString(name);
+}
+
 static PyMethodDef fdt_obj_methods[] = {
     /**
      * get node property
@@ -450,6 +470,13 @@ static PyMethodDef fdt_obj_methods[] = {
     "get_node_path_by_offset($self, offset)\n--\n"
     "Retrieves the full node path associated with the given offset in the FDT.\n"
     "If the offset is invalid, it raises a ValueError."
+    )},
+    {"get_node_path_by_compat", (PyCFunction)get_node_path_by_compat,
+    METH_VARARGS,
+    PyDoc_STR(
+    "get_node_path_by_compat(self, compatible)\n--\n"
+    "Retrieves the full node path associated with the given compatible in the FDT."
+    "If the compatible is not found, it raises a ValueError."
     )},
     /**
      * node name
