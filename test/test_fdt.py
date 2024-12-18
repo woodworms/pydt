@@ -69,6 +69,10 @@ class BaseFDTTests(unittest.TestCase):
         self.assertEqual(self.fdt.get_node_name_by_offset(988), 'uart@10000000')
         self.assertRaises(ValueError, self.fdt.get_node_name_by_offset, -1)
         self.assertEqual(self.fdt.errno, -4)
+        self.assertEqual(self.fdt.get_node_name_by_compat('simple-bus'), 'soc')
+        self.assertEqual(self.fdt.get_node_name_by_compat('ns16550a'), 'uart@10000000')
+        self.assertRaises(ValueError, self.fdt.get_node_name_by_compat, 'no')
+        self.assertEqual(self.fdt.errno, -1)
 
         # get_phandle_by_xxx
         self.assertEqual(self.fdt.get_phandle_by_offset(1300), '0x4')
